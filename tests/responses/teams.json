@@ -1,0 +1,20 @@
+{
+    "data": [
+        {
+            "id":14,
+            "abbreviation":"LAL",
+            "city":"Los Angeles",
+            "conference":"West",
+            "division":"Pacific",
+            "full_name":"Los Angeles Lakers",
+            "name":"Lakers"
+        }
+    ],
+    "meta": {
+        "total_pages": 1,
+        "current_page": 1,
+        "next_page": null,
+        "per_page": 30,
+        "total_count": 30
+    }
+}
