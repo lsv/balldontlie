@@ -24,7 +24,7 @@ abstract class AbstractRequest
     public static string $url;
 
     /**
-     * @var array<mixed>|null
+     * @var array<array-key, mixed>|null
      */
     public static ?array $query = null;
 
@@ -82,7 +82,7 @@ abstract class AbstractRequest
      */
     protected static function deserializeData(string $content, string $model, bool $modelIsArray = true, callable $afterData = null): array
     {
-        /** @var array<mixed> $decodedData */
+        /** @var array<array-key, mixed> $decodedData */
         $decodedData = (new JsonDecode([JsonDecode::ASSOCIATIVE => true]))->decode($content, 'json');
         $encoder = new JsonEncode();
 
