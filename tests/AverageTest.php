@@ -9,12 +9,11 @@ use Lsv\BallDontLie\Average;
 use Lsv\BallDontLie\Model\AverageModel;
 use Lsv\BallDontLie\Model\PlayerIdModel;
 use Lsv\BallDontLie\Model\PlayerModel;
-use Lsv\BallDontLie\Model\StatEnum;
-use PHPUnit\Framework\TestCase;
+use Lsv\BallDontLie\Utils\StatEnum;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
-class AverageTest extends TestCase
+class AverageTest extends BaseTestCase
 {
     private static MockHttpClient $client;
 
@@ -29,7 +28,7 @@ class AverageTest extends TestCase
     {
         self::$client->setResponseFactory(new MockResponse(file_get_contents(__DIR__.'/responses/average.json')));
         $content = Average::average();
-        self::assertSame(AbstractRequest::BASE_URL.'/season_averages', Average::$url);
+        self::assertUrl('season_averages', Average::$url);
         self::assertSame([], Average::$query);
         self::assertCount(1, $content);
 

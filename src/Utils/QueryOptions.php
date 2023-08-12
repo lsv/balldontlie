@@ -6,10 +6,10 @@ namespace Lsv\BallDontLie\Utils;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-readonly class QueryOptions
+final readonly class QueryOptions
 {
     /**
-     * @param array<mixed> $values
+     * @param array<array-key, mixed> $values
      */
     public function __construct(
         public OptionsResolver $resolver,

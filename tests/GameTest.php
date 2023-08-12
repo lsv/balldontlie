@@ -10,11 +10,10 @@ use Lsv\BallDontLie\Model\GameIdModel;
 use Lsv\BallDontLie\Model\GameModel;
 use Lsv\BallDontLie\Model\PlayerModel;
 use Lsv\BallDontLie\Model\TeamModel;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
-class GameTest extends TestCase
+class GameTest extends BaseTestCase
 {
     private static MockHttpClient $client;
 
@@ -30,7 +29,7 @@ class GameTest extends TestCase
         self::$client->setResponseFactory(new MockResponse(file_get_contents(__DIR__.'/responses/games.json')));
 
         $content = Game::games();
-        self::assertSame(AbstractRequest::BASE_URL.'/games', Game::$url);
+        self::assertUrl('games', Game::$url, ['page' => 0, 'per_page' => 25]);
         self::assertSame(['page' => 0, 'per_page' => 25], Game::$query);
         self::assertCount(1, $content['data']);
         $this->assertContent($content['data'][0]);

@@ -38,7 +38,6 @@
         "fix": [
             "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix",
             "phpstan",
-            "psalm",
             "XDEBUG_MODE=coverage phpunit",
             "coverage-check .build/coverage/clover.xml 100 --only-percentage",
             "infection --skip-initial-tests --threads=32 --coverage=.build/coverage"

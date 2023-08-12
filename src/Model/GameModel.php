@@ -13,7 +13,7 @@ class GameModel
     public int $season;
     public int $period;
     public string $status;
-    public string $time;
+    public ?string $time;
     public bool $postseason;
     public TeamModel $homeTeam;
     public TeamModel $visitorTeam;

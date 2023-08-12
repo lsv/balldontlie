@@ -6,6 +6,7 @@ namespace Lsv\BallDontLie;
 
 use Lsv\BallDontLie\Model\AverageModel;
 use Lsv\BallDontLie\Model\PlayerModel;
+use Lsv\BallDontLie\Utils\Mapper;
 use Lsv\BallDontLie\Utils\QueryOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -13,7 +14,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class Average extends AbstractRequest
+final class Average extends AbstractRequest
 {
     /**
      * @param array<int|PlayerModel>|null $players
@@ -35,7 +36,7 @@ class Average extends AbstractRequest
             'season_averages',
             new QueryOptions($options, [
                 'season' => $season,
-                'player_ids' => self::playersMapper($players),
+                'player_ids' => Mapper::playersMapper($players),
             ]),
         );
 

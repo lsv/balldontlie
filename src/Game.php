@@ -8,6 +8,7 @@ use Lsv\BallDontLie\Model\GameModel;
 use Lsv\BallDontLie\Model\MetaModel;
 use Lsv\BallDontLie\Model\PlayerModel;
 use Lsv\BallDontLie\Model\TeamModel;
+use Lsv\BallDontLie\Utils\Mapper;
 use Lsv\BallDontLie\Utils\QueryOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -15,7 +16,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class Game extends AbstractRequest
+final class Game extends AbstractRequest
 {
     /**
      * @param \DateTimeInterface[]|null             $dates
@@ -30,14 +31,14 @@ class Game extends AbstractRequest
      * @throws TransportExceptionInterface
      */
     public static function games(
-        int $page = 0,
-        int $perPage = 25,
         array $dates = null,
         array $seasons = null,
         array $teams = null,
         bool $postSeason = null,
         \DateTimeInterface $startDate = null,
-        \DateTimeInterface $endDate = null
+        \DateTimeInterface $endDate = null,
+        int $page = 0,
+        int $perPage = 25,
     ): array {
         $options = new OptionsResolver();
         $options->setRequired(['page', 'per_page']);
@@ -48,9 +49,9 @@ class Game extends AbstractRequest
             new QueryOptions($options, [
                 'page' => $page,
                 'per_page' => $perPage,
-                'dates' => self::datesMapper($dates),
+                'dates' => Mapper::datesMapper($dates),
                 'seasons' => $seasons,
-                'team_ids' => self::teamsMapper($teams),
+                'team_ids' => Mapper::teamsMapper($teams),
                 'postseason' => $postSeason,
                 'start_date' => $startDate?->format('Y-m-d'),
                 'end_date' => $endDate?->format('Y-m-d'),
@@ -72,7 +73,7 @@ class Game extends AbstractRequest
     public static function game(int|GameModel $game): GameModel
     {
         $content = (new self())->request(
-            sprintf('games/%d', (int) self::gamesMapper($game)),
+            sprintf('games/%d', Mapper::gameMapper($game)),
         );
 
         /** @var GameModel $data */

@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Lsv\BallDontLieTest;
 
-use Lsv\BallDontLie\AbstractRequest;
 use Lsv\BallDontLie\Model\PlayerModel;
 use Lsv\BallDontLie\Model\TeamModel;
 use Lsv\BallDontLie\Player;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
-class PlayerTest extends TestCase
+class PlayerTest extends BaseTestCase
 {
     private static MockHttpClient $client;
 
@@ -28,7 +26,7 @@ class PlayerTest extends TestCase
         self::$client->setResponseFactory(new MockResponse(file_get_contents(__DIR__.'/responses/player.json')));
 
         $content = Player::player(237);
-        self::assertSame(AbstractRequest::BASE_URL.'/players/237', Player::$url);
+        self::assertUrl('players/237', Player::$url);
         self::assertSame([], Player::$query);
         $this->assertContent($content);
     }
@@ -40,7 +38,7 @@ class PlayerTest extends TestCase
         $player->id = 237;
 
         $content = Player::player($player);
-        self::assertSame(AbstractRequest::BASE_URL.'/players/237', Player::$url);
+        self::assertUrl('players/237', Player::$url);
         $this->assertContent($content);
     }
 
@@ -49,7 +47,7 @@ class PlayerTest extends TestCase
         self::$client->setResponseFactory(new MockResponse(file_get_contents(__DIR__.'/responses/players.json')));
 
         $content = Player::players();
-        self::assertSame(AbstractRequest::BASE_URL.'/players', Player::$url);
+        self::assertUrl('players', Player::$url);
         self::assertSame(['page' => 0, 'per_page' => 25], Player::$query);
         self::assertCount(1, $content['data']);
         $this->assertContent($content['data'][0]);
@@ -66,7 +64,7 @@ class PlayerTest extends TestCase
     {
         self::$client->setResponseFactory(new MockResponse(file_get_contents(__DIR__.'/responses/players.json')));
 
-        Player::players(5, 100, 'hello world');
+        Player::players('hello world', 5, 100);
         self::assertSame(['page' => 5, 'per_page' => 100, 'search' => 'hello world'], Player::$query);
     }
 

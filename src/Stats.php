@@ -9,6 +9,7 @@ use Lsv\BallDontLie\Model\GameModel;
 use Lsv\BallDontLie\Model\MetaModel;
 use Lsv\BallDontLie\Model\PlayerModel;
 use Lsv\BallDontLie\Model\StatModel;
+use Lsv\BallDontLie\Utils\Mapper;
 use Lsv\BallDontLie\Utils\QueryOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -16,7 +17,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class Stats extends AbstractRequest
+final class Stats extends AbstractRequest
 {
     /**
      * @param \DateTimeInterface[]|null                $dates
@@ -32,8 +33,6 @@ class Stats extends AbstractRequest
      * @throws TransportExceptionInterface
      */
     public static function stats(
-        int $page = 0,
-        int $perPage = 25,
         array $dates = null,
         array $seasons = null,
         array $players = null,
@@ -41,6 +40,8 @@ class Stats extends AbstractRequest
         bool $postSeason = null,
         \DateTimeInterface $startDate = null,
         \DateTimeInterface $endDate = null,
+        int $page = 0,
+        int $perPage = 25,
     ): array {
         $options = new OptionsResolver();
         $options->setRequired(['page', 'per_page']);
@@ -51,10 +52,10 @@ class Stats extends AbstractRequest
             new QueryOptions($options, [
                 'page' => $page,
                 'per_page' => $perPage,
-                'dates' => self::datesMapper($dates),
+                'dates' => Mapper::datesMapper($dates),
                 'seasons' => $seasons,
-                'player_ids' => self::playersMapper($players),
-                'game_ids' => self::gamesMapper($games),
+                'player_ids' => Mapper::playersMapper($players),
+                'game_ids' => Mapper::gamesMapper($games),
                 'postseason' => $postSeason,
                 'start_date' => $startDate?->format('Y-m-d'),
                 'end_date' => $endDate?->format('Y-m-d'),

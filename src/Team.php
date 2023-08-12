@@ -7,6 +7,7 @@ namespace Lsv\BallDontLie;
 use Lsv\BallDontLie\Model\MetaModel;
 use Lsv\BallDontLie\Model\PlayerModel;
 use Lsv\BallDontLie\Model\TeamModel;
+use Lsv\BallDontLie\Utils\Mapper;
 use Lsv\BallDontLie\Utils\QueryOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -14,7 +15,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class Team extends AbstractRequest
+final class Team extends AbstractRequest
 {
     /**
      * @return array{data: TeamModel[], meta: MetaModel}
@@ -52,7 +53,7 @@ class Team extends AbstractRequest
     public static function team(int|PlayerModel|TeamModel $id): TeamModel
     {
         $content = (new self())->request(
-            sprintf('teams/%d', (int) self::teamsMapper($id))
+            sprintf('teams/%d', Mapper::teamMapper($id))
         );
 
         /** @var TeamModel $data */

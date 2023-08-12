@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Lsv\BallDontLie;
 
-use Lsv\BallDontLie\Model\AverageModel;
-use Lsv\BallDontLie\Model\GameModel;
 use Lsv\BallDontLie\Model\MetaModel;
-use Lsv\BallDontLie\Model\PlayerModel;
-use Lsv\BallDontLie\Model\TeamModel;
 use Lsv\BallDontLie\Utils\QueryOptions;
 use Lsv\BallDontLie\Utils\Serializer;
 use Symfony\Component\HttpClient\HttpClient;
@@ -25,7 +21,7 @@ abstract class AbstractRequest
     public const BASE_URL = 'https://www.balldontlie.io/api/v1';
     private static ?HttpClientInterface $client = null;
 
-    public static ?string $url = null;
+    public static string $url;
 
     /**
      * @var array<mixed>|null
@@ -43,7 +39,7 @@ abstract class AbstractRequest
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function request(
+    protected function request(
         string $url,
         QueryOptions $queryOptions = null
     ): string {
@@ -53,26 +49,30 @@ abstract class AbstractRequest
             self::$query = array_filter(self::$query, static fn (mixed $value) => !is_null($value));
         }
 
+        $this->makeUrl($url);
+
         self::$client = self::$client ?: HttpClient::create();
         $response = self::$client->request(
             $this->getHttpMethod(),
-            $this->makeUrl($url),
-            [
-                'query' => self::$query,
-            ]
+            self::$url,
         );
 
         return $response->getContent();
     }
 
-    protected function getHttpMethod(): string
+    private function getHttpMethod(): string
     {
         return 'GET';
     }
 
-    private function makeUrl(string $url): string
+    private function makeUrl(string $url): void
     {
-        return self::$url = sprintf('%s/%s', self::BASE_URL, $url);
+        self::$url = sprintf('%s/%s', self::BASE_URL, $url);
+        if (self::$query) {
+            $query = http_build_query(self::$query);
+            $query = preg_replace('/%5B\d+%5D/imU', '%5B%5D', $query);
+            self::$url .= '?'.$query;
+        }
     }
 
     /**
@@ -107,102 +107,6 @@ abstract class AbstractRequest
             'data' => $data,
             'meta' => $meta ?? null,
         ];
-    }
-
-    /**
-     * @param \DateTimeInterface[]|null $dates
-     *
-     * @return string[]|null
-     */
-    protected static function datesMapper(?array $dates): ?array
-    {
-        return $dates ? array_map(static fn (\DateTimeInterface $date) => $date->format('Y-m-d'), $dates) : null;
-    }
-
-    /**
-     * @param array<int|TeamModel|PlayerModel>|TeamModel|PlayerModel|int|null $teams
-     *
-     * @return int[]|int|null
-     */
-    protected static function teamsMapper(mixed $teams): null|array|int
-    {
-        if (!$teams) {
-            return null;
-        }
-
-        $map = static function (int|TeamModel|PlayerModel $team): int {
-            if ($team instanceof TeamModel) {
-                return $team->id;
-            }
-
-            if ($team instanceof PlayerModel) {
-                return $team->team->id;
-            }
-
-            return $team;
-        };
-
-        if (!is_array($teams)) {
-            return $map($teams);
-        }
-
-        return array_map(static fn (int|TeamModel|PlayerModel $team): int => $map($team), $teams);
-    }
-
-    /**
-     * @param array<int|PlayerModel|AverageModel>|int|PlayerModel|AverageModel|null $players
-     *
-     * @return int[]|int|null
-     */
-    protected static function playersMapper(mixed $players): null|int|array
-    {
-        if (!$players) {
-            return null;
-        }
-
-        $map = static function (int|PlayerModel|AverageModel $player): int {
-            if ($player instanceof AverageModel) {
-                return $player->playerId;
-            }
-
-            if ($player instanceof PlayerModel) {
-                return $player->id;
-            }
-
-            return $player;
-        };
-
-        if (!is_array($players)) {
-            return $map($players);
-        }
-
-        return array_map(static fn (int|PlayerModel|AverageModel $player) => $map($player), $players);
-    }
-
-    /**
-     * @param array<int|GameModel>|int|GameModel|null $games
-     *
-     * @return int[]|int|null
-     */
-    protected static function gamesMapper(mixed $games): mixed
-    {
-        if (!$games) {
-            return null;
-        }
-
-        $map = static function (int|GameModel $game): int {
-            if ($game instanceof GameModel) {
-                return $game->id;
-            }
-
-            return $game;
-        };
-
-        if (!is_array($games)) {
-            return $map($games);
-        }
-
-        return array_map(static fn (int|GameModel $game): int => $map($game), $games);
     }
 
     protected static function statsMapper(): callable

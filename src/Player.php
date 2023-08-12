@@ -7,6 +7,7 @@ namespace Lsv\BallDontLie;
 use Lsv\BallDontLie\Model\AverageModel;
 use Lsv\BallDontLie\Model\MetaModel;
 use Lsv\BallDontLie\Model\PlayerModel;
+use Lsv\BallDontLie\Utils\Mapper;
 use Lsv\BallDontLie\Utils\QueryOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -14,7 +15,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class Player extends AbstractRequest
+final class Player extends AbstractRequest
 {
     /**
      * @return array{data: PlayerModel[], meta: MetaModel}
@@ -24,8 +25,11 @@ class Player extends AbstractRequest
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public static function players(int $page = 0, int $perPage = 25, string $search = null): array
-    {
+    public static function players(
+        string $search = null,
+        int $page = 0,
+        int $perPage = 25
+    ): array {
         $options = new OptionsResolver();
         $options->setRequired(['page', 'per_page']);
         $options->setDefined(['search']);
@@ -54,7 +58,7 @@ class Player extends AbstractRequest
     public static function player(int|PlayerModel|AverageModel $id): PlayerModel
     {
         $content = (new self())->request(
-            sprintf('players/%d', (int) self::playersMapper($id))
+            sprintf('players/%d', Mapper::playerMapper($id))
         );
 
         /** @var PlayerModel $data */

@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer as BaseSerializer;
 
-class Serializer
+final readonly class Serializer
 {
     public static function getSerializer(): BaseSerializer
     {
